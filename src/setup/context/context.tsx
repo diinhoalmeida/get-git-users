@@ -1,56 +1,89 @@
-import React, { useContext, useState, Children } from "react";
+import React, { useState } from "react";
 import api from "../api";
 
 export const AuthContext = React.createContext<any>({});
 
 export const AuthProvider = ({ children }: any) => {
   const [showAlert, setShowAlert] = useState(false);
-  const [userBranches, setBranches] = useState();
-  const [userIdName, setUserIdName] = useState();
+  const [userLogin, setUserLogin] = useState<string>();
   const [userData, setUserData] = useState();
+  const [page, setPage] = useState<string>("projects");
+  const [projectList, setProjectList] = useState<any>();
+  const [arrayToShow, setArrayToShow] = useState<any>([]);
 
-  const searchOnGitHub = (userData: any) => {
-    const nameUserGit = userData;
+  const searchOnGitHub = () => {
+    const { nameUser } = searchNameUserStorage();
+
+    const nameUserGit = nameUser ? nameUser : userLogin;
+
     api
-        .get(`${nameUserGit}`)
+        .get(`/users/${nameUserGit}`)
         .then((response) => {
-            console.log(response.data)
-            findBranchesByUser(nameUserGit)
             setUserData(response.data);
-            setShowAlert(true)
         })
         .catch((err) => {
             setShowAlert(true);
     });
   }
 
-  const findBranchesByUser = (nameUserGit: string) => {
+  const findProjectsByUser = () => {
+    const { nameUser } = searchNameUserStorage();
+
+    const nameUserGit = nameUser ? nameUser : userLogin;
+  
     api
-        .get(`${nameUserGit}/respos`)
+        .get(`/users/${nameUserGit}/repos`)
         .then((response) => {
-            console.log(response.data)
-            setBranches(response.data);
+            setProjectList(response.data);
         })
         .catch((err) => {
             console.log(err)
     });
   }
 
-  const saveIdUserStorage = (user: any) => {
-    if (user.id_user_git.length === 0 || user.id_user_git === '') return;
-    localStorage.setItem("username", user.id_user_git);  
+  const findBranchesByProject = async (projectName?: string) => {
+    const { nameUser } = searchNameUserStorage();
+
+    const nameUserGit = nameUser ? nameUser : userLogin;
+
+    await api
+        .get(`repos/${nameUserGit}/${projectName}/branches`)
+        .then(async (response) => {
+            setPage('branch');
+            setArrayToShow(response.data);
+        })
+        .catch((err) => {
+            console.log(err)
+    });
+
   }
 
+  const saveIdUserStorage = (user: any) => {
+    if (user.id_user_git.length === 0 || user.id_user_git === '') return;
+    
+    setUserLogin(user.id_user_git);
+    localStorage.setItem("username", user.id_user_git);
+    window.location.href = '/search-page';
+  }
+
+  const searchNameUserStorage = () => {
+    const nameUser = localStorage.getItem("username"); 
+    return { nameUser }; 
+  }
   return (
     <AuthContext.Provider value={{
-      userIdName, 
       saveIdUserStorage, 
       userData, 
-      userBranches, 
-      setBranches, 
+      projectList, 
       showAlert, 
       setShowAlert, 
-      searchOnGitHub
+      searchOnGitHub,
+      findProjectsByUser,
+      findBranchesByProject,
+      page,
+      setPage,
+      setArrayToShow,
+      arrayToShow
     }}>
       {children}
     </AuthContext.Provider>

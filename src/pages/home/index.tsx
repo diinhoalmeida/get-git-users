@@ -1,9 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import './index.css';
+import './home.css';
 import { AuthContext } from '../../setup/context/context';
-import { Alert, Snackbar, Stack } from '@mui/material';
-import { Link } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import { Alert, Input, InputAdornment, InputLabel, Snackbar, Stack } from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
 
 const Home = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -15,24 +16,31 @@ const Home = () => {
 
     return (
         <div className="body_home">
-            <div className="content_home">
-                <div>
-                    <img src={require('../../assets/logos/just-for-you-logo.png')} alt="logo-just-for-you"></img>        
-                </div>
-                <div>
+            <div className="background" />
+            <div className="search_container">
+                <div className="background_form"/>
+                <div className="form_space">
+                    <img src={require('../../assets/logos/git-hub-pixel-logo.png')} alt="logo-just-for-you"></img>  
+                    <h1>PESQUISAR</h1>
+                    <p>Pesquise abaixo pelo nome do usuário GitHub</p>
                     <form onSubmit={handleSubmit(saveIdUserStorage)}>
-                        <input type="text" {...register("id_user_git")} />
-                        <Link to="/search-page" type="submit">Enviar</Link>
+                            <Input
+                                type="text" 
+                                {...register("id_user_git")}
+                                id="input-with-icon-adornment"
+                                startAdornment={
+                                <InputAdornment position="start">
+                                    <AccountCircle />
+                                </InputAdornment>
+                            }
+                        />
+                        <Button type="submit" variant="contained">
+                            Pesquisar
+                        </Button> 
                     </form>
-                </div>
+                </div>    
             </div>
-            <Stack spacing={2} sx={{ position: 'absolute', width: '100%' }}>
-                <Snackbar open={showAlert} autoHideDuration={6000} onClose={handleClose}>
-                    <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                        This is a success message!
-                    </Alert>
-                </Snackbar>
-            </Stack>
+            <footer><p>©Todos os direitos reservados</p></footer>
         </div>
     )
 }

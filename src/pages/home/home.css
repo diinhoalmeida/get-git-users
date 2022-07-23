@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400&display=swap');
+
+.body_home * {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.body_home {
+    width: 100vw;
+    height: 100vh;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.body_home .background {
+    position: absolute;
+    width: 50%;
+    background-color: #d0cfd462;
+    height: calc(100% + 200px);
+    z-index: 2;
+    left: 0;
+    border-bottom-right-radius: 50%;
+    border-top-right-radius: 50%;
+    box-shadow: inset 0 0 5px rgba(53, 52, 52, 0.2);
+}
+
+.body_home .search_container {
+    z-index: 3 ; 
+    padding: 2em;
+    border-radius: 1em;
+    position: relative;
+}
+
+.body_home .background_form {
+    position: absolute;
+    z-index: 4;
+    width: 100%;
+    border-radius: 1em;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(110, 102, 141, 0.06);
+    backdrop-filter: blur(1px);
+}
+
+.body_home .form_space {
+    display: flex;
+    z-index: 5;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+}
+
+.body_home .form_space img {
+    width: 100px;
+    height: 100px;
+}
+
+.body_home .form_space h1 {
+    margin: 0;
+}
+
+.body_home .form_space p {
+    width: 200px;
+    text-align: center;
+}
+
+.body_home .form_space form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+}
+
+.body_home footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}

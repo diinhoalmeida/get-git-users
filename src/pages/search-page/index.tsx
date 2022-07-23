@@ -1,36 +1,47 @@
 import React, { useEffect, useContext } from 'react';
 import './index.css';
 import { AuthContext } from '../../setup/context/context';
+import CardBox from './components/card';
+import { Button } from '@mui/material';
+import CardBranch from './components/card-branche';
+
 
 const SearchPage = () => {
-    const { searchOnGitHub, userData } = useContext(AuthContext);
+    const { searchOnGitHub, userData, page, findProjectsByUser } = useContext(AuthContext);
 
     useEffect(() => {
-        const userName = localStorage.getItem('username');
-        searchOnGitHub(userName);
-    })
-
-    useEffect(() => {
-        console.log(userData);
-    }, [userData])
+        searchOnGitHub();
+        findProjectsByUser();
+    }, []);
 
     return (
-        <div className="card_container">
-            <div className="header">
-                <img src={`${userData?.avatar_url}`} alt="binary-wallpaper" style={{width: 50}}/>
-            </div>
-            <div className="card_box">
-                <div>
-                    <img src={require('../../assets/icons/file-icon.png')} alt="file-icon" />
+        <div className="search_body">
+            <div className="search_container">
+                <div className="title_page">
+                    <div className="title_page_left">
+                        projetos / branches / commits
+                    </div>
+                    <div className="title_page_right">
+                        <p>Total de Projetos:</p>
+                        <p>80</p>
+                    </div>
                 </div>
-                <div className="name_branch_language_space">
-                    <p>
-                        aula01
-                    </p>
-                    <p>
-                        JavaScript
-                    </p>
+                <div className="branchs_list">
+                    {page === 'projects' && <CardBox />}
+                    {(page === 'branch' || page === 'commits') && <CardBranch />}
                 </div>
+                <footer className="search_container_footer">
+                    <div className="data_user_space">
+                        <img src={`${userData?.avatar_url}`} alt="binary-wallpaper" />
+                        <div className="name_nick_space">
+                            <p>{userData?.name}</p>
+                            <p>{userData?.login}</p>
+                        </div>
+                    </div>
+                    <Button onClick={() => window.location.href = '/home'} type="submit" variant="contained">
+                        Pesquisar Novamente
+                    </Button> 
+                </footer>
             </div>
         </div>
     )
