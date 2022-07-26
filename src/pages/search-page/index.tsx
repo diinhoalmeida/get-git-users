@@ -4,10 +4,12 @@ import { AuthContext } from '../../setup/context/context';
 import CardBox from './components/card';
 import { Button } from '@mui/material';
 import CardBranch from './components/card-branche';
+import CollapsibleTable from './components/table-commits';
+import CircularIndeterminate from './components/circular-progress';
 
 
 const SearchPage = () => {
-    const { searchOnGitHub, userData, page, findProjectsByUser } = useContext(AuthContext);
+    const { searchOnGitHub, userData, page, findProjectsByUser, loading, addMoreCommitsToList } = useContext(AuthContext);
 
     useEffect(() => {
         searchOnGitHub();
@@ -29,6 +31,13 @@ const SearchPage = () => {
                 <div className="branchs_list">
                     {page === 'projects' && <CardBox />}
                     {(page === 'branch' || page === 'commits') && <CardBranch />}
+                    {page === 'commits' && <CollapsibleTable />}
+                    {loading && <CircularIndeterminate />}
+                    {page === 'commits' && 
+                        <Button onClick={() => addMoreCommitsToList()} variant="contained">
+                            Pesquisar Novamente
+                        </Button>
+                    }
                 </div>
                 <footer className="search_container_footer">
                     <div className="data_user_space">
