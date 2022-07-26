@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: any) => {
 
     var listCommits: any = [];
 
-    const testeArrayCommit: any = [...commitsList];
+    const previousArray: any = [...commitsList];
 
     await api
         .get(`repos/${nameUserGit}/${projectName}/commits/${commitSha}`)
@@ -85,15 +85,15 @@ export const AuthProvider = ({ children }: any) => {
             files: response.data.files
           }
           listCommits.push(arrayCommits);
-          setCommitsList([...testeArrayCommit, arrayCommits]);
-          if (response.data.parents[0]) teste(response.data.parents[0], listCommits)
+          setCommitsList([...previousArray, arrayCommits]);
+          if (response.data.parents[0]) handleCommitList(response.data.parents[0], listCommits)
         })
         .catch((err) => {
             console.log(err)
     });  
   }
 
-  const teste = async (parents: any, commitsArrayToTable: any) => {
+  const handleCommitList = async (parents: any, commitsArrayToTable: any) => {
     const { nameUser } = searchNameUserStorage();
     var countPagination = 0;
     var newParent = parents;
