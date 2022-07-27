@@ -64,7 +64,6 @@ export const AuthProvider = ({ children }: any) => {
   }
 
   const findCommitsByBranch = async (commitSha: string) => {
-    console.log(commitSha);
     const { nameUser } = searchNameUserStorage();
 
     const nameUserGit: any = nameUser ? nameUser : userLogin;

@@ -49,6 +49,24 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
     
   }
 
+  const formatFileName = (fileName: string) => {  
+    var newFileName:any = fileName;
+    const arrayFileName = [...fileName.split("")];
+    const arrayFileNameReverse = arrayFileName.reverse();
+    const barId = arrayFileNameReverse.indexOf("/");
+    const arrayNameFormated = arrayFileName.splice(0, barId).reverse();
+
+    if (barId !== -1) newFileName = arrayNameFormated.join("");
+    return { newFileName } 
+  }
+
+  const formatDate = (dateFileChanged: string) => {
+    const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul","Ago","Set","Out","Nov","Dez"];
+    let data = new Date(dateFileChanged);
+    let dataFormatada = ((data.getDate() + " " + meses[(data.getMonth())] + " " + data.getFullYear()));
+    return { dataFormatada };
+  }
+
   return (
     <React.Fragment>
       {commitsList?.map((project: any, id: number) => (
@@ -87,18 +105,22 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {project?.files?.map((file: any, id: number) => (
-                      <TableRow key={id}>
-                        <TableCell component="th" scope="row">
-                          {project?.date}
-                        </TableCell>
-                        <TableCell>{file.filename}</TableCell>
-                        <TableCell align="right">{file?.additions}</TableCell>
-                        <TableCell align="right">
-                          {file?.deletions}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {project?.files?.map((file: any, id: number) => {
+                      const { newFileName } = (formatFileName(file.filename));
+                      const { dataFormatada } = formatDate(project?.date);
+                      return (
+                        <TableRow key={id}>
+                          <TableCell component="th" scope="row">
+                            {`${dataFormatada}`}
+                          </TableCell>
+                          <TableCell>{newFileName}</TableCell>
+                          <TableCell align="right">{file?.additions}</TableCell>
+                          <TableCell align="right">
+                            {file?.deletions}
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
                   </TableBody>
                 </Table>
               </Box>

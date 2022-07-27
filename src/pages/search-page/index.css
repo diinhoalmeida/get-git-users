@@ -69,6 +69,24 @@
     border-bottom: 1px solid #1a1a1c80;
 }
 
+.search_body .branchs_list .button_load_more {
+    background-color: red;
+    background-image: linear-gradient(
+        -60deg,
+        transparent, transparent 40%,
+        #ffffff44 40%, #ffffff44 60%,
+        transparent 40%, transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-position-x: 150%;
+}
+
+.search_body .branchs_list .button_load_more:hover {
+    background-position-x: -150%;
+    transition: background-position-x 1500ms;
+}
+
 .search_body .card_branch {
     height: 120px;
     width: calc(100% - 2em);

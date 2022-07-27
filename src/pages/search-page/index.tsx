@@ -34,7 +34,7 @@ const SearchPage = () => {
                     {page === 'commits' && <CollapsibleTable />}
                     {loading && <CircularIndeterminate />}
                     {page === 'commits' && 
-                        <Button onClick={() => addMoreCommitsToList()} variant="contained">
+                        <Button onClick={() => addMoreCommitsToList()} variant="contained" className="button_load_more">
                             Pesquisar Novamente
                         </Button>
                     }
@@ -47,7 +47,7 @@ const SearchPage = () => {
                             <p>{userData?.login}</p>
                         </div>
                     </div>
-                    <Button onClick={() => window.location.href = '/home'} type="submit" variant="contained">
+                    <Button onClick={() => window.location.href = '/'} type="submit" variant="contained">
                         Pesquisar Novamente
                     </Button> 
                 </footer>
