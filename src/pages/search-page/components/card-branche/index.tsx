@@ -6,7 +6,6 @@ const CardBranch = (props: any) => {
     const {findCommitsByBranch, setArrayToShow, arrayToShow, page, setPage, arraytoShowByType } = useContext(AuthContext);
 
     const selectBranch = (idBranch: number, commitSha: string) => {
-        console.log(commitSha);
         var previousArray = [...arrayToShow];
         const filterArray = arrayToShow[idBranch];
         previousArray = filterArray;

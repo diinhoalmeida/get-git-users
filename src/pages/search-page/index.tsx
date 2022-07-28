@@ -1,11 +1,14 @@
 import React, { useEffect, useContext } from 'react';
 import './index.css';
 import { AuthContext } from '../../setup/context/context';
-import CardBox from './components/card';
+import {
+    CardBox,
+    CardBranch,
+    CollapsibleTable,
+    CircularIndeterminate,
+    TitlePage
+} from './components/index';
 import { Button } from '@mui/material';
-import CardBranch from './components/card-branche';
-import CollapsibleTable from './components/table-commits';
-import CircularIndeterminate from './components/circular-progress';
 
 
 const SearchPage = () => {
@@ -19,15 +22,7 @@ const SearchPage = () => {
     return (
         <div className="search_body">
             <div className="search_container">
-                <div className="title_page">
-                    <div className="title_page_left">
-                        projetos / branches / commits
-                    </div>
-                    <div className="title_page_right">
-                        <p>Total de Projetos:</p>
-                        <p>80</p>
-                    </div>
-                </div>
+                <TitlePage />
                 <div className="branchs_list">
                     {page === 'projects' && <CardBox />}
                     {(page === 'branch' || page === 'commits') && <CardBranch />}

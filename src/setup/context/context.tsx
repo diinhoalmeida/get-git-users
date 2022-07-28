@@ -14,6 +14,10 @@ export const AuthProvider = ({ children }: any) => {
   const [commitsList, setCommitsList] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [lastSha, setLastSha] = useState<any>();
+  const [totalProjects, setTotalProjects] = useState<number>(0);
+  const [totalBranches, setTotalBranches] = useState<number>(0);
+  const [totalCommits, setTotalCommits] = useState<number>(0);
+  const [originalArrayToShow, setOriginalArrayToShow] = useState<any>();
 
   const searchOnGitHub = () => {
     const { nameUser } = searchNameUserStorage();
@@ -39,10 +43,12 @@ export const AuthProvider = ({ children }: any) => {
         .get(`/users/${nameUserGit}/repos`)
         .then((response) => {
             setProjectList(response.data);
+            setTotalProjects(response.data.length);
         })
         .catch((err) => {
             console.log(err)
     });
+
   }
 
   const findBranchesByProject = async (projectName?: string) => {
@@ -56,6 +62,8 @@ export const AuthProvider = ({ children }: any) => {
             setPage('branch');
             setProjectName(projectName);
             setArrayToShow(response.data);
+            setOriginalArrayToShow(response.data);
+            setTotalBranches(response.data.length);
         })
         .catch((err) => {
             console.log(err)
@@ -83,13 +91,15 @@ export const AuthProvider = ({ children }: any) => {
             date: response.data.commit.author.date,
             files: response.data.files
           }
+
           listCommits.push(arrayCommits);
           setCommitsList([...previousArray, arrayCommits]);
           if (response.data.parents[0]) handleCommitList(response.data.parents[0], listCommits)
         })
         .catch((err) => {
             console.log(err)
-    });  
+    });
+  
   }
 
   const handleCommitList = async (parents: any, commitsArrayToTable: any) => {
@@ -105,6 +115,7 @@ export const AuthProvider = ({ children }: any) => {
         .get(`repos/${nameUser}/${projectName}/commits/${newParent.sha}`)
         .then(async (response) => {
           var arrayCommits = {};
+
           if (response.data.parents.length > 0) {
             arrayCommits = {
               message: response.data.commit.message,
@@ -130,16 +141,21 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     setLoading(false);
+
     setCommitsList([...previousArray, ...commitsArrayToTable]);
+
   }
 
   const addMoreCommitsToList = async () => {
     const { nameUser } = searchNameUserStorage();
+
     var countPagination = 0;
     var previousArray = [...commitsList];
     var newArrayPagination: any = [];
+
     if (!lastSha) return;
     var newParent = lastSha;
+    
     setLoading(true);
 
     while (countPagination !== 5) {
@@ -147,6 +163,7 @@ export const AuthProvider = ({ children }: any) => {
         .get(`repos/${nameUser}/${projectName}/commits/${newParent.sha}`)
         .then(async (response) => {
           var arrayCommits = {};
+
           if (response.data.parents.length > 0) {
             arrayCommits = {
               message: response.data.commit.message,
@@ -156,12 +173,15 @@ export const AuthProvider = ({ children }: any) => {
               date: response.data.commit.author.date,
               files: response.data.files
             }
+
             countPagination = countPagination + 1;
             newArrayPagination.push(arrayCommits);
             newParent = response.data.parents[0];
+
             if (countPagination === 5) {
               setLastSha(response.data.parents[0]);
             }
+
           } else {
             countPagination = 5
             setLastSha(null);
@@ -173,9 +193,15 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     setCommitsList([...previousArray, ...newArrayPagination])
+    
     setLoading(false);
-
+    
+    
   }
+
+  useEffect(() => {
+    setTotalCommits(commitsList.length);
+  }, [commitsList])
 
   const saveIdUserStorage = (user: any) => {
     if (user.id_user_git.length === 0 || user.id_user_git === '') return;
@@ -189,6 +215,23 @@ export const AuthProvider = ({ children }: any) => {
     const nameUser = localStorage.getItem("username"); 
     return { nameUser }; 
   }
+
+  const handleTitlePages = (typePage: string) => {
+    setArrayToShow([...originalArrayToShow]);
+    setCommitsList([]);
+
+    switch(typePage) {
+        case 'projects':
+            setPage('projects');
+            break;
+        case 'branch':
+            setPage('branch');
+            break;
+        default:
+            setPage('projects')
+    }
+}
+
   return (
     <AuthContext.Provider value={{
       saveIdUserStorage, 
@@ -206,7 +249,11 @@ export const AuthProvider = ({ children }: any) => {
       findCommitsByBranch,
       commitsList,
       loading,
-      addMoreCommitsToList
+      addMoreCommitsToList,
+      totalCommits,
+      totalBranches,
+      totalProjects,
+      handleTitlePages
     }}>
       {children}
     </AuthContext.Provider>

@@ -26,38 +26,6 @@
     border-radius: 1em;
 }
 
-.search_body .title_page {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.search_body .title_page_left, .title_page_right {
-    display: flex;
-    column-gap: 1em;
-    justify-content: center;
-    align-items: center;
-}
-
-.search_body .title_page_left p:nth-child(1){
-    font-weight: 800;
-} 
-
-.search_body .title_page_left p:nth-child(2){
-    font-weight: 400;
-    font-size: 14px;
-} 
-
-.search_body .title_page_right p:nth-child(1) {
-    font-weight: 400;
-    font-size: 14px;
-}
-
-.search_body .title_page_right p:nth-child(2) {
-    font-weight: 800;
-}
-
 .search_body .branchs_list {
     height: 600px;
     width: 100%;
