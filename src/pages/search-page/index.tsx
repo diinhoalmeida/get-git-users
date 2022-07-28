@@ -9,10 +9,11 @@ import {
     TitlePage
 } from './components/index';
 import { Button } from '@mui/material';
+import ButtonSubmit from '../../components/button-submit';
 
 
 const SearchPage = () => {
-    const { searchOnGitHub, userData, page, findProjectsByUser, loading, addMoreCommitsToList } = useContext(AuthContext);
+    const { buttonActive, searchOnGitHub, userData, page, findProjectsByUser, loading, addMoreCommitsToList } = useContext(AuthContext);
 
     useEffect(() => {
         searchOnGitHub();
@@ -29,9 +30,13 @@ const SearchPage = () => {
                     {page === 'commits' && <CollapsibleTable />}
                     {loading && <CircularIndeterminate />}
                     {page === 'commits' && 
-                        <Button onClick={() => addMoreCommitsToList()} variant="contained" className="button_load_more">
-                            Pesquisar Novamente
-                        </Button>
+                        <div className="button_more_commits_space">
+                            <ButtonSubmit 
+                                onClick={() => addMoreCommitsToList()}
+                                textButton={`Carregar commits`}
+                                activeButton={buttonActive}
+                            />
+                        </div>
                     }
                 </div>
                 <footer className="search_container_footer">
@@ -42,9 +47,10 @@ const SearchPage = () => {
                             <p>{userData?.login}</p>
                         </div>
                     </div>
-                    <Button onClick={() => window.location.href = '/'} type="submit" variant="contained">
-                        Pesquisar Novamente
-                    </Button> 
+                    <ButtonSubmit 
+                        onClick={() => window.location.href = '/'}
+                        textButton={`Pesquisar novamente`}
+                    />
                 </footer>
             </div>
         </div>

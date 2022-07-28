@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }: any) => {
   const [totalBranches, setTotalBranches] = useState<number>(0);
   const [totalCommits, setTotalCommits] = useState<number>(0);
   const [originalArrayToShow, setOriginalArrayToShow] = useState<any>();
+  const [buttonActive, setButtonActive] = useState<boolean>(false);
 
   const searchOnGitHub = () => {
     const { nameUser } = searchNameUserStorage();
@@ -94,7 +95,8 @@ export const AuthProvider = ({ children }: any) => {
 
           listCommits.push(arrayCommits);
           setCommitsList([...previousArray, arrayCommits]);
-          if (response.data.parents[0]) handleCommitList(response.data.parents[0], listCommits)
+          setButtonActive(true)
+          if (response.data.parents[0]) handleCommitList(response.data.parents[0], listCommits);
         })
         .catch((err) => {
             console.log(err)
@@ -109,6 +111,7 @@ export const AuthProvider = ({ children }: any) => {
     var previousArray = [...commitsList];
     
     setLoading(true);
+    setButtonActive(false)
 
     while (countPagination !== 4) {
       await api
@@ -130,8 +133,10 @@ export const AuthProvider = ({ children }: any) => {
             newParent = response.data.parents[0];
             if (countPagination === 4) {
               setLastSha(response.data.parents[0]);
+              setButtonActive(true);
             }
           } else {
+            setButtonActive(false);
             countPagination = 4;
           }
         })
@@ -157,6 +162,7 @@ export const AuthProvider = ({ children }: any) => {
     var newParent = lastSha;
     
     setLoading(true);
+    setButtonActive(false);
 
     while (countPagination !== 5) {
       await api
@@ -180,10 +186,12 @@ export const AuthProvider = ({ children }: any) => {
 
             if (countPagination === 5) {
               setLastSha(response.data.parents[0]);
+              setButtonActive(true);
             }
 
           } else {
-            countPagination = 5
+            countPagination = 5;
+            setButtonActive(false);
             setLastSha(null);
           }
         })
@@ -219,6 +227,7 @@ export const AuthProvider = ({ children }: any) => {
   const handleTitlePages = (typePage: string) => {
     setArrayToShow([...originalArrayToShow]);
     setCommitsList([]);
+    setButtonActive(false);
 
     switch(typePage) {
         case 'projects':
@@ -253,7 +262,8 @@ export const AuthProvider = ({ children }: any) => {
       totalCommits,
       totalBranches,
       totalProjects,
-      handleTitlePages
+      handleTitlePages,
+      buttonActive
     }}>
       {children}
     </AuthContext.Provider>
