@@ -1,56 +1,279 @@
-import React, { useContext, useState, Children } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import useAlert from "../../components/alert-popup/hooks/useAlert";
 import api from "../api";
+import AlertAction from "../reducer/actions";
+import { AlertContext } from "./alert-context";
 
 export const AuthContext = React.createContext<any>({});
 
 export const AuthProvider = ({ children }: any) => {
-  const [showAlert, setShowAlert] = useState(false);
-  const [userBranches, setBranches] = useState();
-  const [userIdName, setUserIdName] = useState();
+  const [userLogin, setUserLogin] = useState<string>();
   const [userData, setUserData] = useState();
+  const [page, setPage] = useState<string>("projects");
+  const [projectList, setProjectList] = useState<any>();
+  const [arrayToShow, setArrayToShow] = useState<any>([]);
+  const [projectName, setProjectName] = useState<any>();
+  const [commitsList, setCommitsList] = useState<any>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [lastSha, setLastSha] = useState<any>();
+  const [totalProjects, setTotalProjects] = useState<number>(0);
+  const [totalBranches, setTotalBranches] = useState<number>(0);
+  const [originalArrayToShow, setOriginalArrayToShow] = useState<any>();
+  const [buttonActive, setButtonActive] = useState<boolean>(false);
+  const [state, dispatch] = useContext(AlertContext);
 
-  const searchOnGitHub = (userData: any) => {
-    const nameUserGit = userData;
-    api
-        .get(`${nameUserGit}`)
+  const searchOnGitHub = async (loginId?: string) => {
+    const { nameUser } = searchNameUserStorage();
+    var isInvalidUser:boolean = false;
+
+    var nameUserGit = nameUser ? nameUser : userLogin;
+
+    if (loginId !== undefined) nameUserGit = loginId;
+
+    await api
+        .get(`/users/${nameUserGit}`)
         .then((response) => {
-            console.log(response.data)
-            findBranchesByUser(nameUserGit)
             setUserData(response.data);
-            setShowAlert(true)
         })
         .catch((err) => {
-            setShowAlert(true);
+          isInvalidUser = true;
+          dispatch(AlertAction.showErrorAlert('Erro ao realizar solicitação.'));
     });
+
+    return { isInvalidUser };
   }
 
-  const findBranchesByUser = (nameUserGit: string) => {
+  const findProjectsByUser = () => {
+    const { nameUser } = searchNameUserStorage();
+
+    const nameUserGit = nameUser ? nameUser : userLogin;
+  
     api
-        .get(`${nameUserGit}/respos`)
+        .get(`/users/${nameUserGit}/repos`)
         .then((response) => {
-            console.log(response.data)
-            setBranches(response.data);
+            setProjectList(response.data);
+            setTotalProjects(response.data.length);
+            dispatch(AlertAction.showSuccessAlert('Saudações!'));
         })
         .catch((err) => {
-            console.log(err)
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar lista de projetos.'));
     });
+
   }
 
-  const saveIdUserStorage = (user: any) => {
-    if (user.id_user_git.length === 0 || user.id_user_git === '') return;
-    localStorage.setItem("username", user.id_user_git);  
+  const findBranchesByProject = async (projectName?: string) => {
+    const { nameUser } = searchNameUserStorage();
+
+    const nameUserGit = nameUser ? nameUser : userLogin;
+
+    await api
+        .get(`repos/${nameUserGit}/${projectName}/branches`)
+        .then(async (response) => {
+            setPage('branch');
+            setProjectName(projectName);
+            setArrayToShow(response.data);
+            setOriginalArrayToShow(response.data);
+            setTotalBranches(response.data.length);
+        })
+        .catch((err) => {
+            dispatch(AlertAction.showErrorAlert('Erro ao buscar branches.'));
+    });
+
   }
+
+  const findCommitsByBranch = async (commitSha: string) => {
+    const { nameUser } = searchNameUserStorage();
+
+    const nameUserGit: any = nameUser ? nameUser : userLogin;
+
+    var listCommits: any = [];
+
+    const previousArray: any = [...commitsList];
+
+    await api
+        .get(`repos/${nameUserGit}/${projectName}/commits/${commitSha}`)
+        .then(async (response) => {
+          const arrayCommits = {
+            message: response.data.commit.message,
+            stats_total: response.data.stats.total,
+            stats_additions: response.data.stats.additions,
+            stats_deletions: response.data.stats.deletions,
+            date: response.data.commit.author.date,
+            files: response.data.files
+          }
+
+          listCommits.push(arrayCommits);
+          setCommitsList([...previousArray, arrayCommits]);
+          setButtonActive(true)
+          if (response.data.parents[0]) {
+            handleCommitList(response.data.parents[0], listCommits)
+          } else {
+            setButtonActive(false);
+          }; 
+        })
+        .catch((err) => {
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar commits.'));
+    });
+  
+  }
+
+  const handleCommitList = async (parents: any, commitsArrayToTable: any) => {
+    const { nameUser } = searchNameUserStorage();
+    var countPagination = 0;
+    var newParent = parents;
+    var previousArray = [...commitsList];
+    
+    setLoading(true);
+    setButtonActive(false)
+
+    while (countPagination !== 4) {
+      await api
+        .get(`repos/${nameUser}/${projectName}/commits/${newParent.sha}`)
+        .then(async (response) => {
+          var arrayCommits = {};
+
+          if (response.data.parents.length > 0) {
+            arrayCommits = {
+              message: response.data.commit.message,
+              stats_total: response.data.stats.total,
+              stats_additions: response.data.stats.additions,
+              stats_deletions: response.data.stats.deletions,
+              date: response.data.commit.author.date,
+              files: response.data.files
+            }
+            countPagination = countPagination + 1;
+            commitsArrayToTable.push(arrayCommits);
+            newParent = response.data.parents[0];
+            if (countPagination === 4) {
+              setLastSha(response.data.parents[0]);
+              setButtonActive(true);
+            }
+          } else {
+            setButtonActive(false);
+            countPagination = 4;
+          }
+        })
+        .catch((err) => {
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar commits.'));
+      });
+    }
+
+    setLoading(false);
+
+    setCommitsList([...previousArray, ...commitsArrayToTable]);
+
+  }
+
+  const addMoreCommitsToList = async () => {
+    const { nameUser } = searchNameUserStorage();
+
+    var countPagination = 0;
+    var previousArray = [...commitsList];
+    var newArrayPagination: any = [];
+
+    if (!lastSha) return;
+    var newParent = lastSha;
+    
+    setLoading(true);
+    setButtonActive(false);
+
+    while (countPagination !== 5) {
+      await api
+        .get(`repos/${nameUser}/${projectName}/commits/${newParent.sha}`)
+        .then(async (response) => {
+          var arrayCommits = {};
+
+          if (response.data.parents.length > 0) {
+            arrayCommits = {
+              message: response.data.commit.message,
+              stats_total: response.data.stats.total,
+              stats_additions: response.data.stats.additions,
+              stats_deletions: response.data.stats.deletions,
+              date: response.data.commit.author.date,
+              files: response.data.files
+            }
+
+            countPagination = countPagination + 1;
+            newArrayPagination.push(arrayCommits);
+            newParent = response.data.parents[0];
+
+            if (countPagination === 5) {
+              setLastSha(response.data.parents[0]);
+              setButtonActive(true);
+            }
+
+          } else {
+            countPagination = 5;
+            setButtonActive(false);
+            setLastSha(null);
+          }
+        })
+        .catch((err) => {
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar mais commits.'));
+      });
+    }
+
+    setCommitsList([...previousArray, ...newArrayPagination])
+    
+    setLoading(false);
+    
+    
+  }
+
+  const saveIdUserStorage = async (user: any) => {
+    if (user.id_user_git.length === 0 || user.id_user_git === '') return;
+
+    const { isInvalidUser }: any = await searchOnGitHub(user.id_user_git);
+
+    if (isInvalidUser) return;
+
+    setUserLogin(user.id_user_git);
+    localStorage.setItem("username", user.id_user_git);
+    window.location.href = '/search-page';
+  }
+
+  const searchNameUserStorage = () => {
+    const nameUser = localStorage.getItem("username"); 
+    return { nameUser }; 
+  }
+
+  const handleTitlePages = (typePage: string) => {
+    setArrayToShow([...originalArrayToShow]);
+    setCommitsList([]);
+    setButtonActive(false);
+
+    switch(typePage) {
+        case 'projects':
+            setPage('projects');
+            break;
+        case 'branch':
+            setPage('branch');
+            break;
+        default:
+            setPage('projects')
+    }
+}
 
   return (
     <AuthContext.Provider value={{
-      userIdName, 
       saveIdUserStorage, 
       userData, 
-      userBranches, 
-      setBranches, 
-      showAlert, 
-      setShowAlert, 
-      searchOnGitHub
+      projectList,
+      searchOnGitHub,
+      findProjectsByUser,
+      findBranchesByProject,
+      page,
+      setPage,
+      setArrayToShow,
+      arrayToShow,
+      findCommitsByBranch,
+      commitsList,
+      loading,
+      addMoreCommitsToList,
+      totalBranches,
+      totalProjects,
+      handleTitlePages,
+      buttonActive
     }}>
       {children}
     </AuthContext.Provider>
