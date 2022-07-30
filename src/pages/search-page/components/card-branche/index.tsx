@@ -3,19 +3,21 @@ import '../index.css';
 import { AuthContext } from '../../../../setup/context/context';
 
 const CardBranch = (props: any) => {
-    const {collectLastMessageCommmit, setArrayToShow, arrayToShow, page, arraytoShowByType } = useContext(AuthContext);
+    const {findCommitsByBranch, setArrayToShow, arrayToShow, page, setPage, arraytoShowByType } = useContext(AuthContext);
 
-    const selectBranch = (idBranch: number) => {
+    const selectBranch = (idBranch: number, commitSha: string) => {
         var previousArray = [...arrayToShow];
         const filterArray = arrayToShow[idBranch];
         previousArray = filterArray;
         setArrayToShow([previousArray]);
+        setPage('commits');
+        findCommitsByBranch(commitSha);
     }
 
     return (
         <>
             {arrayToShow?.map((project: any, id: number) => (
-                <div onClick={() => selectBranch(id)} key={id} className="card_branch">
+                <div onClick={() => selectBranch(id, project?.commit?.sha)} key={id} className="card_branch">
                     <div className="card_branch_img_space">
                         <img src={require('../../../../assets/icons/file-icon.png')} alt="file-icon" />
                     </div>

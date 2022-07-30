@@ -1,13 +1,19 @@
 import React, { useEffect, useContext } from 'react';
 import './index.css';
 import { AuthContext } from '../../setup/context/context';
-import CardBox from './components/card';
+import {
+    CardBox,
+    CardBranch,
+    CollapsibleTable,
+    CircularIndeterminate,
+    TitlePage
+} from './components/index';
 import { Button } from '@mui/material';
-import CardBranch from './components/card-branche';
+import ButtonSubmit from '../../components/button-submit';
 
 
 const SearchPage = () => {
-    const { searchOnGitHub, userData, page, findProjectsByUser } = useContext(AuthContext);
+    const { buttonActive, searchOnGitHub, userData, page, findProjectsByUser, loading, addMoreCommitsToList } = useContext(AuthContext);
 
     useEffect(() => {
         searchOnGitHub();
@@ -17,18 +23,21 @@ const SearchPage = () => {
     return (
         <div className="search_body">
             <div className="search_container">
-                <div className="title_page">
-                    <div className="title_page_left">
-                        projetos / branches / commits
-                    </div>
-                    <div className="title_page_right">
-                        <p>Total de Projetos:</p>
-                        <p>80</p>
-                    </div>
-                </div>
+                <TitlePage />
                 <div className="branchs_list">
                     {page === 'projects' && <CardBox />}
                     {(page === 'branch' || page === 'commits') && <CardBranch />}
+                    {page === 'commits' && <CollapsibleTable />}
+                    {loading && <CircularIndeterminate />}
+                    {page === 'commits' && 
+                        <div className="button_more_commits_space">
+                            <ButtonSubmit 
+                                onClick={() => addMoreCommitsToList()}
+                                textButton={`Carregar commits`}
+                                activeButton={buttonActive}
+                            />
+                        </div>
+                    }
                 </div>
                 <footer className="search_container_footer">
                     <div className="data_user_space">
@@ -38,9 +47,10 @@ const SearchPage = () => {
                             <p>{userData?.login}</p>
                         </div>
                     </div>
-                    <Button onClick={() => window.location.href = '/home'} type="submit" variant="contained">
-                        Pesquisar Novamente
-                    </Button> 
+                    <ButtonSubmit 
+                        onClick={() => window.location.href = '/'}
+                        textButton={`Pesquisar novamente`}
+                    />
                 </footer>
             </div>
         </div>

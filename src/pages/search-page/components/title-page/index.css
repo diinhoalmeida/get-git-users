@@ -1,0 +1,137 @@
+:root {
+    --blue-seccion-selected: #2B92FF;
+    --blue-standard: #71B7FF;
+    --bar-color: #100C08;
+}
+
+.search_body .title_page {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.search_body .title_page p {
+    margin: 8px 0;
+}
+
+
+.search_body .title_page_left_projects,
+.search_body .title_page_left_branch, 
+.search_body .title_page_right,
+.search_body .title_page_left_commit {
+    display: flex;
+    column-gap: 1em;
+    justify-content: center;
+    align-items: center;
+} 
+
+.search_body .title_page_left_projects p:nth-child(1) {
+    font-weight: 800;
+}  
+
+.search_body .title_page_left_projects p:nth-child(2),
+.search_body .title_page_left_projects p:nth-child(4),
+.search_body .title_page_left_branch p:nth-child(2),
+.search_body .title_page_left_branch p:nth-child(4) {
+    color: var(--bar-color);
+}
+
+.search_body .title_page_left_branch p:nth-child(1) {
+    color: var(--blue-standard);
+    font-weight: 800;
+    text-decoration-line: underline;
+}
+
+.search_body .title_page_left_branch p:nth-child(1):hover {
+    cursor: pointer;
+    color: var(--blue-seccion-selected);
+} 
+
+.search_body .title_page_left_branch p:nth-child(3) {
+    color: var(--blue-seccion-selected);
+    font-weight: 800;
+    text-decoration-line: underline;
+}
+
+.search_body .title_page_left_branch p:nth-child(3):hover {
+    cursor: pointer;
+} 
+
+.search_body .title_page_left_commit p:nth-child(1),
+.search_body .title_page_left_commit p:nth-child(3) {
+    color: var(--blue-standard);
+    font-weight: 800;
+    text-decoration-line: underline;
+}
+
+.search_body .title_page_left_commit p:nth-child(1):hover,
+.search_body .title_page_left_commit p:nth-child(3):hover {
+    color: var(--blue-seccion-selected);
+    cursor: pointer;
+}
+
+.search_body .title_page_left_commit p:nth-child(5) {
+    font-weight: 800;
+}
+
+.search_body .title_page_right p:nth-child(1) {
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.search_body .title_page_right p:nth-child(2) {
+    font-weight: 800;
+}
+
+@media(max-width: 630px) {
+    .search_body .title_page_left_branch,
+    .search_body .title_page_left_commit {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search_body .title_page_left_projects p:nth-child(1) {
+        font-weight: 800;
+    }  
+    
+    .search_body .title_page_left_branch p:nth-child(1) {
+        color: var(--blue-standard);
+        font-weight: 800;
+        text-decoration-line: underline;
+    }
+    
+    .search_body .title_page_left_branch p:nth-child(1):hover {
+        cursor: pointer;
+        color: var(--blue-seccion-selected);
+    } 
+    
+    .search_body .title_page_left_branch p:nth-child(2) {
+        color: var(--blue-seccion-selected);
+        font-weight: 800;
+        text-decoration-line: underline;
+    }
+    
+    .search_body .title_page_left_branch p:nth-child(2):hover {
+        cursor: pointer;
+    } 
+    
+    .search_body .title_page_left_commit p:nth-child(1),
+    .search_body .title_page_left_commit p:nth-child(2) {
+        color: var(--blue-standard);
+        font-weight: 800;
+        text-decoration-line: underline;
+    }
+    
+    .search_body .title_page_left_commit p:nth-child(1):hover,
+    .search_body .title_page_left_commit p:nth-child(2):hover {
+        color: var(--blue-seccion-selected);
+        cursor: pointer;
+    }
+    
+    .search_body .title_page_left_commit p:nth-child(3) {
+        font-weight: 800;
+        text-decoration-line: none;
+        color: #100C08;
+    }
+}
