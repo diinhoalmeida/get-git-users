@@ -38,9 +38,10 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
   const [idOpen, setIdOpen] = React.useState<number | boolean>();
   const [previousId, setPreviousId] = React.useState<any>();
 
-  const openCloseArrow = (id: number) => {
-    setIdOpen(id);
+  const openCloseArrow = async (id: number) => {
+    await setIdOpen(id);
     if (previousId !== idOpen) {
+      console.log('entrou');
       setIdOpen(id);
       setPreviousId(id);
     } else {
@@ -93,15 +94,15 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
             <Collapse in={idOpen === id} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
-                  History
+                  Arquivos
                 </Typography>
                 <Table size="small" aria-label="purchases">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Customer</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                      <TableCell align="right">Total price ($)</TableCell>
+                      <TableCell>Data</TableCell>
+                      <TableCell>Nome do Arquivo</TableCell>
+                      <TableCell align="right">Adicionados</TableCell>
+                      <TableCell align="right">Deletados</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

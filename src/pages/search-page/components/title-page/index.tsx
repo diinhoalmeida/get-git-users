@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../../../setup/context/context';
 import './index.css';
-import useResize from './hooks';
 import useWindowDimensions from './hooks';
 
 const projectsSelected = (maxWidth: any) => {
@@ -38,7 +37,7 @@ const projectsSelected = (maxWidth: any) => {
 
 const TitlePage = () => {
     const [maxWidth, setMaxWidth] = useState<boolean>(true);
-    const { totalProjects, totalBranches, totalCommits, page } = useContext(AuthContext);
+    const { totalProjects, totalBranches, totalCommits, page, commitsList } = useContext(AuthContext);
     
     const { width } = useWindowDimensions()
 
@@ -84,7 +83,7 @@ const TitlePage = () => {
                         )
                         :
                         (
-                            <> {totalCommits}</>
+                            <> {commitsList.length}</>
                         )
                     }
                 </p>

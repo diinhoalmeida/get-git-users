@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import useAlert from "../../components/alert-popup/hooks/useAlert";
 import api from "../api";
+import AlertAction from "../reducer/actions";
+import { AlertContext } from "./alert-context";
 
 export const AuthContext = React.createContext<any>({});
 
 export const AuthProvider = ({ children }: any) => {
-  const [showAlert, setShowAlert] = useState(false);
   const [userLogin, setUserLogin] = useState<string>();
   const [userData, setUserData] = useState();
   const [page, setPage] = useState<string>("projects");
@@ -16,23 +18,29 @@ export const AuthProvider = ({ children }: any) => {
   const [lastSha, setLastSha] = useState<any>();
   const [totalProjects, setTotalProjects] = useState<number>(0);
   const [totalBranches, setTotalBranches] = useState<number>(0);
-  const [totalCommits, setTotalCommits] = useState<number>(0);
   const [originalArrayToShow, setOriginalArrayToShow] = useState<any>();
   const [buttonActive, setButtonActive] = useState<boolean>(false);
+  const [state, dispatch] = useContext(AlertContext);
 
-  const searchOnGitHub = () => {
+  const searchOnGitHub = async (loginId?: string) => {
     const { nameUser } = searchNameUserStorage();
+    var isInvalidUser:boolean = false;
 
-    const nameUserGit = nameUser ? nameUser : userLogin;
+    var nameUserGit = nameUser ? nameUser : userLogin;
 
-    api
+    if (loginId !== undefined) nameUserGit = loginId;
+
+    await api
         .get(`/users/${nameUserGit}`)
         .then((response) => {
             setUserData(response.data);
         })
         .catch((err) => {
-            setShowAlert(true);
+          isInvalidUser = true;
+          dispatch(AlertAction.showErrorAlert('Erro ao realizar solicitação.'));
     });
+
+    return { isInvalidUser };
   }
 
   const findProjectsByUser = () => {
@@ -45,9 +53,10 @@ export const AuthProvider = ({ children }: any) => {
         .then((response) => {
             setProjectList(response.data);
             setTotalProjects(response.data.length);
+            dispatch(AlertAction.showSuccessAlert('Saudações!'));
         })
         .catch((err) => {
-            console.log(err)
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar lista de projetos.'));
     });
 
   }
@@ -67,7 +76,7 @@ export const AuthProvider = ({ children }: any) => {
             setTotalBranches(response.data.length);
         })
         .catch((err) => {
-            console.log(err)
+            dispatch(AlertAction.showErrorAlert('Erro ao buscar branches.'));
     });
 
   }
@@ -96,10 +105,14 @@ export const AuthProvider = ({ children }: any) => {
           listCommits.push(arrayCommits);
           setCommitsList([...previousArray, arrayCommits]);
           setButtonActive(true)
-          if (response.data.parents[0]) handleCommitList(response.data.parents[0], listCommits);
+          if (response.data.parents[0]) {
+            handleCommitList(response.data.parents[0], listCommits)
+          } else {
+            setButtonActive(false);
+          }; 
         })
         .catch((err) => {
-            console.log(err)
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar commits.'));
     });
   
   }
@@ -141,7 +154,7 @@ export const AuthProvider = ({ children }: any) => {
           }
         })
         .catch((err) => {
-            console.log(err)
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar commits.'));
       });
     }
 
@@ -196,7 +209,7 @@ export const AuthProvider = ({ children }: any) => {
           }
         })
         .catch((err) => {
-            console.log(err)
+          dispatch(AlertAction.showErrorAlert('Erro ao buscar mais commits.'));
       });
     }
 
@@ -207,13 +220,13 @@ export const AuthProvider = ({ children }: any) => {
     
   }
 
-  useEffect(() => {
-    setTotalCommits(commitsList.length);
-  }, [commitsList])
-
-  const saveIdUserStorage = (user: any) => {
+  const saveIdUserStorage = async (user: any) => {
     if (user.id_user_git.length === 0 || user.id_user_git === '') return;
-    
+
+    const { isInvalidUser }: any = await searchOnGitHub(user.id_user_git);
+
+    if (isInvalidUser) return;
+
     setUserLogin(user.id_user_git);
     localStorage.setItem("username", user.id_user_git);
     window.location.href = '/search-page';
@@ -245,9 +258,7 @@ export const AuthProvider = ({ children }: any) => {
     <AuthContext.Provider value={{
       saveIdUserStorage, 
       userData, 
-      projectList, 
-      showAlert, 
-      setShowAlert, 
+      projectList,
       searchOnGitHub,
       findProjectsByUser,
       findBranchesByProject,
@@ -259,7 +270,6 @@ export const AuthProvider = ({ children }: any) => {
       commitsList,
       loading,
       addMoreCommitsToList,
-      totalCommits,
       totalBranches,
       totalProjects,
       handleTitlePages,

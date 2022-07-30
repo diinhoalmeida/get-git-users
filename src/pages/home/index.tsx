@@ -10,10 +10,6 @@ const Home = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { saveIdUserStorage, showAlert, setShowAlert } = useContext(AuthContext);
 
-    const handleClose = () => {
-        setShowAlert(false);    
-    }
-
     return (
         <div className="body_home">
             <div className="background" />

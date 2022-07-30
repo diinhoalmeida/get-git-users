@@ -1,5 +1,4 @@
 import { Button } from '@mui/material';
-import React, { useEffect } from 'react';
 import './index.css';
 
 interface ButtonSubmitInterface {
