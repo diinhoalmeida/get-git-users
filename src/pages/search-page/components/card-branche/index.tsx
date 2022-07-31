@@ -31,7 +31,7 @@ const CardBranch = (props: any) => {
                                 <p>{project?.commit.url}</p>
                             </div>            
                         </div>
-                        <p>{850}</p>
+                        {/* <p>{850}</p> */}
                     </div>
                 </div>
             ))}
