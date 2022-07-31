@@ -22,7 +22,7 @@ const CardBox = (props: any) => {
                                 <p>{project?.description}</p>
                             </div>            
                         </div>
-                        <p>{850}</p>
+                        {/* <p>{850}</p> */}
                     </div>
                 </div>
             ))}
