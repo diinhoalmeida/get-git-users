@@ -13,6 +13,8 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { AuthContext } from '../../../../setup/context/context';
+import { TableCommitsTextPortuguese } from './constants';
+import { TableCommitsInterface } from './interface';
 
 function createData(
   message: string,
@@ -20,7 +22,7 @@ function createData(
   stats_additions: number,
   stats_deletions: number,
   date: Date,
-  files: any
+  files: []
 ) {
   return {
     message,
@@ -31,6 +33,18 @@ function createData(
     files
   };
 }
+
+const { 
+  addText, 
+  delText, 
+  totalText, 
+  messageText, 
+  addOnFileText, 
+  dataCommitText, 
+  deleteOnFileText, 
+  filesText, 
+  nameFileText
+}: TableCommitsInterface = TableCommitsTextPortuguese;
 
 function Row(props: { commitsList: ReturnType<typeof createData> }) {
   
@@ -94,15 +108,15 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
             <Collapse in={idOpen === id} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
-                  Arquivos
+                  {filesText}
                 </Typography>
                 <Table size="small" aria-label="purchases">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Data</TableCell>
-                      <TableCell>Nome do Arquivo</TableCell>
-                      <TableCell align="right">Adicionados</TableCell>
-                      <TableCell align="right">Deletados</TableCell>
+                      <TableCell>{dataCommitText}</TableCell>
+                      <TableCell>{nameFileText}</TableCell>
+                      <TableCell align="right">{addOnFileText}</TableCell>
+                      <TableCell align="right">{deleteOnFileText}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -143,14 +157,17 @@ export default function CollapsibleTable() {
         <TableHead >
           <TableRow>
             <TableCell />
-            <TableCell>Mensagem</TableCell>
-            <TableCell align="right">Adições</TableCell>
-            <TableCell align="right">Deletados</TableCell>
-            <TableCell align="right">Total</TableCell>
+            <TableCell>{messageText}</TableCell>
+            <TableCell align="right">{addText}</TableCell>
+            <TableCell align="right">{delText}</TableCell>
+            <TableCell align="right">{totalText}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          <Row commitsList={commitsList} />
+          <Row 
+            commitsList={commitsList} 
+            
+          />
         </TableBody>
       </Table>
     </TableContainer>
