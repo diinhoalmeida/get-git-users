@@ -5,10 +5,13 @@ import { AuthContext } from '../../setup/context/context';
 import { Input, InputAdornment } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 import ButtonSubmit from '../../components/button-submit';
+import { HomeInterface } from "./interface"
+import { HomeTextPortuguese } from './constants';
 
 const Home = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const { saveIdUserStorage, showAlert, setShowAlert } = useContext(AuthContext);
+    const { saveIdUserStorage } = useContext(AuthContext);
+    const { titleHome, textHome, footerHome}: HomeInterface = HomeTextPortuguese;
 
     return (
         <div className="body_home">
@@ -17,8 +20,8 @@ const Home = () => {
                 <div className="background_form"/>
                 <div className="form_space">
                     <img src={require('../../assets/logos/git-hub-pixel-logo.png')} alt="logo-just-for-you"></img>  
-                    <h1>PESQUISAR</h1>
-                    <p>Pesquise abaixo pelo nome do usuário GitHub</p>
+                    <h1>{titleHome}</h1>
+                    <p>{textHome}</p>
                     <form onSubmit={handleSubmit(saveIdUserStorage)}>
                         <Input
                             type="text" 
@@ -34,7 +37,7 @@ const Home = () => {
                     </form>
                 </div>    
             </div>
-            <footer><p>©Todos os direitos reservados</p></footer>
+            <footer><p>{footerHome}</p></footer>
         </div>
     )
 }

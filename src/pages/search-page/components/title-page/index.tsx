@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../../../setup/context/context';
 import './index.css';
 import useWindowDimensions from './hooks';
+import { TitlePageTextPortuguese } from './constants';
+import { TitlePageInterface } from './interface';
 
 const projectsSelected = (maxWidth: any) => {
     const { userData, page, handleTitlePages } = useContext(AuthContext);
@@ -38,6 +40,7 @@ const projectsSelected = (maxWidth: any) => {
 const TitlePage = () => {
     const [maxWidth, setMaxWidth] = useState<boolean>(true);
     const { totalProjects, totalBranches, totalCommits, page, commitsList } = useContext(AuthContext);
+    const { branchesText, commitsText, projectsText }: TitlePageInterface = TitlePageTextPortuguese;
     
     const { width } = useWindowDimensions()
 
@@ -58,15 +61,15 @@ const TitlePage = () => {
                     {
                         page === 'projects' ? 
                         (
-                            <> Projetos</>
+                            <> {branchesText}</>
                         )
                         : page === 'branch' ?
                         (
-                            <> Branches</>
+                            <> {commitsText}</>
                         )
                         :
                         (
-                            <> Commits</>
+                            <> {projectsText}</>
                         )
                     }
                     :

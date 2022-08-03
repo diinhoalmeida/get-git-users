@@ -93,15 +93,7 @@ export const AuthProvider = ({ children }: any) => {
     await api
         .get(`repos/${nameUserGit}/${projectName}/commits/${commitSha}`)
         .then(async (response) => {
-          const arrayCommits = {
-            message: response.data.commit.message,
-            stats_total: response.data.stats.total,
-            stats_additions: response.data.stats.additions,
-            stats_deletions: response.data.stats.deletions,
-            date: response.data.commit.author.date,
-            files: response.data.files
-          }
-
+          const arrayCommits = arrayCommitsConstructor(response.data);
           listCommits.push(arrayCommits);
           setCommitsList([...previousArray, arrayCommits]);
           setButtonActive(true)
@@ -115,6 +107,17 @@ export const AuthProvider = ({ children }: any) => {
           dispatch(AlertAction.showErrorAlert('Erro ao buscar commits.'));
     });
   
+  }
+
+  const arrayCommitsConstructor = (response: any) => {
+    return {
+      message: response.commit.message,
+      stats_total: response.stats.total,
+      stats_additions: response.stats.additions,
+      stats_deletions: response.stats.deletions,
+      date: response.commit.author.date,
+      files: response.files
+    }
   }
 
   const handleCommitList = async (parents: any, commitsArrayToTable: any) => {
@@ -133,14 +136,7 @@ export const AuthProvider = ({ children }: any) => {
           var arrayCommits = {};
 
           if (response.data.parents.length > 0) {
-            arrayCommits = {
-              message: response.data.commit.message,
-              stats_total: response.data.stats.total,
-              stats_additions: response.data.stats.additions,
-              stats_deletions: response.data.stats.deletions,
-              date: response.data.commit.author.date,
-              files: response.data.files
-            }
+            arrayCommits = arrayCommitsConstructor(response.data);
             countPagination = countPagination + 1;
             commitsArrayToTable.push(arrayCommits);
             newParent = response.data.parents[0];
@@ -184,15 +180,7 @@ export const AuthProvider = ({ children }: any) => {
           var arrayCommits = {};
 
           if (response.data.parents.length > 0) {
-            arrayCommits = {
-              message: response.data.commit.message,
-              stats_total: response.data.stats.total,
-              stats_additions: response.data.stats.additions,
-              stats_deletions: response.data.stats.deletions,
-              date: response.data.commit.author.date,
-              files: response.data.files
-            }
-
+            arrayCommits = arrayCommitsConstructor(response.data);
             countPagination = countPagination + 1;
             newArrayPagination.push(arrayCommits);
             newParent = response.data.parents[0];
@@ -223,13 +211,18 @@ export const AuthProvider = ({ children }: any) => {
   const saveIdUserStorage = async (user: any) => {
     if (user.id_user_git.length === 0 || user.id_user_git === '') return;
 
-    const { isInvalidUser }: any = await searchOnGitHub(user.id_user_git);
-
+    const { isInvalidUser }: any = verifyValidUser(user.id_user_git);
     if (isInvalidUser) return;
 
     setUserLogin(user.id_user_git);
     localStorage.setItem("username", user.id_user_git);
     window.location.href = '/search-page';
+  }
+
+  const verifyValidUser = async (idUser: string) => {
+    const { isInvalidUser }: any = await searchOnGitHub(idUser);
+
+    return { isInvalidUser };
   }
 
   const searchNameUserStorage = () => {
