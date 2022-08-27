@@ -212,7 +212,7 @@ export const AuthProvider = ({ children }: any) => {
     if (user.id_user_git.length === 0 || user.id_user_git === '') return;
 
     const { isInvalidUser }: any = verifyValidUser(user.id_user_git);
-    if (isInvalidUser) return;
+    if (!isInvalidUser) return;
 
     setUserLogin(user.id_user_git);
     localStorage.setItem("username", user.id_user_git);
