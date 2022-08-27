@@ -55,9 +55,7 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
   const openCloseArrow = async (id: number) => {
     await setIdOpen(id);
     if (previousId !== idOpen) {
-      console.log('entrou');
       setIdOpen(id);
-      setPreviousId(id);
     } else {
       setIdOpen(false);  
     }

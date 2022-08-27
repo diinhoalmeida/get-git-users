@@ -22,17 +22,17 @@ export const AuthProvider = ({ children }: any) => {
   const [buttonActive, setButtonActive] = useState<boolean>(false);
   const [state, dispatch] = useContext(AlertContext);
 
-  const searchOnGitHub = async (loginId?: string) => {
+  const searchOnGitHub = async (loginId?: any) => {
     const { nameUser } = searchNameUserStorage();
     var isInvalidUser:boolean = false;
 
     var nameUserGit = nameUser ? nameUser : userLogin;
-
-    if (loginId !== undefined) nameUserGit = loginId;
-
+    if (loginId?.id_user_git !== undefined) nameUserGit = loginId?.id_user_git;
+    
     await api
         .get(`/users/${nameUserGit}`)
         .then((response) => {
+          console.log(response.data);
             setUserData(response.data);
         })
         .catch((err) => {
@@ -211,18 +211,12 @@ export const AuthProvider = ({ children }: any) => {
   const saveIdUserStorage = async (user: any) => {
     if (user.id_user_git.length === 0 || user.id_user_git === '') return;
 
-    const { isInvalidUser }: any = verifyValidUser(user.id_user_git);
-    if (!isInvalidUser) return;
+    const { isInvalidUser }: any = await searchOnGitHub(user);
+    if (isInvalidUser) return;
 
     setUserLogin(user.id_user_git);
     localStorage.setItem("username", user.id_user_git);
     window.location.href = '/search-page';
-  }
-
-  const verifyValidUser = async (idUser: string) => {
-    const { isInvalidUser }: any = await searchOnGitHub(idUser);
-
-    return { isInvalidUser };
   }
 
   const searchNameUserStorage = () => {
