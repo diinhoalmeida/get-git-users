@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }: any) => {
     await api
         .get(`/users/${nameUserGit}`)
         .then((response) => {
-          console.log(response.data);
             setUserData(response.data);
         })
         .catch((err) => {
