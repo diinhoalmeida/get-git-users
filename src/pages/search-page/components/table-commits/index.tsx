@@ -50,17 +50,6 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
   
   const { commitsList }: any = props;
   const [idOpen, setIdOpen] = React.useState<number | boolean>();
-  const [previousId, setPreviousId] = React.useState<any>();
-
-  const openCloseArrow = async (id: number) => {
-    await setIdOpen(id);
-    if (previousId !== idOpen) {
-      setIdOpen(id);
-    } else {
-      setIdOpen(false);  
-    }
-    
-  }
 
   const formatFileName = (fileName: string) => {  
     var newFileName:any = fileName;
@@ -89,7 +78,7 @@ function Row(props: { commitsList: ReturnType<typeof createData> }) {
             <IconButton
               aria-label="expand row"
               size="small"
-              onClick={() => openCloseArrow(id)}
+              onClick={() => setIdOpen(id)}
             >
               {idOpen === id ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
